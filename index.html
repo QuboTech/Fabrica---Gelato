@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🍨 Fábrica de Gelato Artesanal</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FDF6EC;
+    --cream2: #F5EDD8;
+    --brown: #3D1F0A;
+    --brown2: #6B3A1F;
+    --teal: #1D6B5F;
+    --teal2: #2A9B8A;
+    --teal3: #E0F2EE;
+    --gold: #C8843A;
+    --gold2: #F0C97A;
+    --text: #2C1A0E;
+    --muted: #7A5C44;
+    --border: #D4BFA0;
+    --white: #FFFDF8;
+    --red: #C0392B;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  header {
+    background: var(--brown);
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    color: var(--gold2);
+    font-size: 1.6rem;
+    font-weight: 600;
+  }
+  header p { color: #C9A97A; font-size: 0.85rem; margin-top: 2px; }
+  .tabs {
+    display: flex;
+    background: var(--brown2);
+    padding: 0 2rem;
+    gap: 4px;
+  }
+  .tab {
+    padding: 0.75rem 1.25rem;
+    color: #C9A97A;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .tab:hover { color: var(--gold2); }
+  .tab.active { color: var(--gold2); border-bottom-color: var(--gold); }
+  .page { display: none; padding: 2rem; max-width: 900px; margin: 0 auto; }
+  .page.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--brown);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* FORM ELEMENTS */
+  label { font-size: 0.8rem; font-weight: 500; color: var(--muted); display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+  input[type="number"], select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    outline: none;
+    transition: border 0.2s;
+  }
+  input[type="number"]:focus, select:focus { border-color: var(--teal2); background: var(--white); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+
+  /* BUTTONS */
+  .btn {
+    padding: 11px 24px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .btn-primary { background: var(--teal); color: white; }
+  .btn-primary:hover { background: var(--teal2); }
+  .btn-gold { background: var(--gold); color: white; }
+  .btn-gold:hover { background: var(--brown2); }
+  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  .btn-outline:hover { background: var(--cream2); }
+  .btn-sm { padding: 6px 14px; font-size: 0.8rem; }
+  .btn-danger { background: var(--red); color: white; }
+
+  /* RECEITA RESULT */
+  .ingrediente-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    background: var(--cream);
+    font-size: 0.9rem;
+  }
+  .ingrediente-row .nome { color: var(--text); }
+  .ingrediente-row .qtd { font-weight: 500; color: var(--teal); font-size: 0.95rem; }
+  .ingrediente-row .funcao { font-size: 0.75rem; color: var(--muted); }
+  .secao-title {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin: 1rem 0 0.5rem;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  .badge-teal { background: var(--teal3); color: var(--teal); }
+  .badge-gold { background: #FEF3DC; color: var(--gold); }
+  .badge-red { background: #FDECEA; color: var(--red); }
+
+  /* SABORES GRID */
+  .sabores-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .sabor-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .sabor-card:hover { border-color: var(--teal2); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .sabor-card.selected { border-color: var(--teal); background: var(--teal3); }
+  .sabor-card h3 { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--brown); margin-bottom: 6px; }
+  .sabor-card p { font-size: 0.75rem; color: var(--muted); line-height: 1.4; }
+
+  /* MODO PREPARO */
+  .step {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: var(--cream);
+    border-radius: 8px;
+    border-left: 3px solid var(--teal2);
+  }
+  .step-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--teal);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+  .step p { font-size: 0.9rem; line-height: 1.6; color: var(--text); }
+  .alert {
+    background: #FEF3DC;
+    border: 1px solid var(--gold2);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+    color: var(--brown2);
+    margin: 0.75rem 0;
+  }
+
+  /* TOTAIS */
+  .totais-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 1rem; }
+  .total-card {
+    background: var(--cream2);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+  }
+  .total-card .valor { font-size: 1.4rem; font-weight: 500; color: var(--teal); }
+  .total-card .desc { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+
+  /* BANCO SABORES TABLE */
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th { text-align: left; padding: 8px 12px; background: var(--cream2); color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 500; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--cream); }
+
+  /* AGENTE */
+  .agente-box {
+    background: var(--brown);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .agente-box h3 { font-family: 'Playfair Display', serif; color: var(--gold2); margin-bottom: 0.5rem; }
+  .agente-box p { color: #C9A97A; font-size: 0.9rem; line-height: 1.6; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 1rem 0; }
+  .tag {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--white);
+    color: var(--text);
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .tag:hover { background: var(--cream2); }
+  .tag.sel { background: var(--teal3); border-color: var(--teal2); color: var(--teal); }
+  .receita-ia {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    white-space: pre-wrap;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--text);
+    min-height: 80px;
+  }
+  .loading-dots { display: inline-flex; gap: 4px; align-items: center; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal2); animation: blink 1.2s infinite; }
+  .dot:nth-child(2) { animation-delay: 0.3s; }
+  .dot:nth-child(3) { animation-delay: 0.6s; }
+  @keyframes blink { 0%,60%,100%{opacity:0.3} 30%{opacity:1} }
+  .custom-input-row { display: flex; gap: 8px; margin: 0.5rem 0 1rem; }
+  .custom-input-row input[type="text"] {
+    flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px;
+    font-size: 0.9rem; font-family: 'DM Sans', sans-serif; background: var(--cream);
+    color: var(--text); outline: none;
+  }
+  .custom-input-row input[type="text"]:focus { border-color: var(--teal2); background: var(--white); }
+
+  @media (max-width: 600px) {
+    .form-row, .form-row-3, .totais-grid { grid-template-columns: 1fr; }
+    .tabs { overflow-x: auto; }
+    .page { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>🍨 Fábrica de Gelato Artesanal</h1>
+    <p>100% natural · sem gomas · sem espessantes industriais</p>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('receita')">📋 Receita</div>
+  <div class="tab" onclick="showTab('sabores')">🎨 Sabores</div>
+  <div class="tab" onclick="showTab('preparo')">👨‍🍳 Preparo</div>
+  <div class="tab" onclick="showTab('agente')">🤖 Agente IA</div>
+  <div class="tab" onclick="showTab('banco')">📚 Banco</div>
+</div>
+
+<!-- ===================== RECEITA ===================== -->
+<div id="tab-receita" class="page active">
+
+  <div class="card">
+    <div class="card-title">⚙️ Configuração</div>
+    <div class="form-row">
+      <div>
+        <label>Volume a Produzir (Litros)</label>
+        <input type="number" id="volume" value="1.0" step="0.1" min="0.1" max="10" oninput="calcular()">
+      </div>
+      <div>
+        <label>Sabor Principal</label>
+        <select id="saborSel" onchange="calcular()">
+          <option value="">— Selecionar sabor —</option>
+          <option value="Chocolate 70%">Chocolate 70%</option>
+          <option value="Chocolate Meio Amargo">Chocolate Meio Amargo</option>
+          <option value="Cacau Intenso">Cacau Intenso</option>
+          <option value="Doce de Leite">Doce de Leite</option>
+          <option value="Flor de Leite">Flor de Leite</option>
+          <option value="Abóbora com Coco">Abóbora com Coco</option>
+          <option value="Coco">Coco</option>
+          <option value="Pistache">Pistache</option>
+          <option value="Morango">Morango</option>
+          <option value="Frutas Vermelhas">Frutas Vermelhas</option>
+          <option value="Limão Siciliano">Limão Siciliano</option>
+          <option value="Capim Cidreira">Capim Cidreira</option>
+          <option value="Leitinho">Leitinho</option>
+          <option value="Abacate">Abacate</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Adoçante Natural</label>
+        <select id="adocante" onchange="calcular()">
+          <option value="nenhum">Sem adoçante extra</option>
+          <option value="tamara">Tâmara descaroçada</option>
+          <option value="banana">Banana madura assada</option>
+          <option value="ambos">Tâmara + Banana</option>
+        </select>
+      </div>
+      <div>
+        <label>Recheio / Inclusão (opcional)</label>
+        <select id="recheio" onchange="calcular()">
+          <option value="nenhum">Nenhum</option>
+          <option value="choc_picado">Chocolate picado</option>
+          <option value="brownie">Brownie em cubos</option>
+          <option value="doce_leite">Doce de leite (marmorizando)</option>
+          <option value="pasta_amend">Pasta de amendoim</option>
+          <option value="nozes">Nozes / Castanhas</option>
+          <option value="frutas_crist">Frutas cristalizadas</option>
+          <option value="coco_queimado">Coco queimado</option>
+          <option value="cookies">Cookies em pedaços</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="resultado" style="display:none">
+    <div class="card-title">📊 Receita Calculada</div>
+    <div id="resultado-content"></div>
+    <div class="totais-grid" id="totais"></div>
+  </div>
+
+</div>
+
+<!-- ===================== SABORES ===================== -->
+<div id="tab-sabores" class="page">
+  <div class="card">
+    <div class="card-title">🎨 Banco de Sabores</div>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem">Clique num sabor para carregar na calculadora</p>
+    <div class="sabores-grid" id="saboresGrid"></div>
+  </div>
+</div>
+
+<!-- ===================== PREPARO ===================== -->
+<div id="tab-preparo" class="page">
+  <div class="card">
+    <div class="card-title">👨‍🍳 Modo de Preparo Completo</div>
+    <div id="preparo-content"></div>
+  </div>
+</div>
+
+<!-- ===================== AGENTE IA ===================== -->
+<div id="tab-agente" class="page">
+  <div class="agente-box">
+    <h3>🤖 Agente Gelataio</h3>
+    <p>Selecione o que você tem em casa. O agente cria a receita ideal com seus ingredientes, respeitando as técnicas italianas naturais.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🥛 Base Líquida</div>
+    <div class="tags" id="tags-base"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">🍯 Adoçantes Naturais</div>
+    <div class="tags" id="tags-adoc"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">🎨 Sabores & Frutas</div>
+    <div class="tags" id="tags-sabor"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">✨ Aromáticos & Extras</div>
+    <div class="tags" id="tags-extra"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">➕ Ingrediente personalizado</div>
+    <div class="custom-input-row">
+      <input type="text" id="customIng" placeholder="Ex: framboesa, avelã, tahine..." onkeydown="if(event.key==='Enter')addCustomIng()">
+      <button class="btn btn-outline btn-sm" onclick="addCustomIng()">Adicionar</button>
+    </div>
+    <div class="tags" id="tags-custom"></div>
+  </div>
+
+  <div style="display:flex;gap:1rem;margin-bottom:1.25rem;align-items:center">
+    <button class="btn btn-gold" onclick="gerarIa()" id="btnGerar" style="flex:1">🤖 Gerar receita com IA ↗</button>
+    <button class="btn btn-outline btn-sm" onclick="limparTags()">Limpar</button>
+  </div>
+
+  <div class="card" id="boxIa" style="display:none">
+    <div class="card-title" id="iaTitle">Receita gerada</div>
+    <div class="receita-ia" id="iaResposta"></div>
+  </div>
+</div>
+
+<!-- ===================== BANCO ===================== -->
+<div id="tab-banco" class="page">
+  <div class="card">
+    <div class="card-title">📚 Banco de Sabores Completo</div>
+    <table>
+      <thead><tr><th>Sabor</th><th>Ingredientes por Litro</th><th>Preparo</th></tr></thead>
+      <tbody id="bancoTabela"></tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-title">📐 Regras de Formulação</div>
+    <table>
+      <thead><tr><th>Ingrediente</th><th>Categoria</th><th>Mínimo</th><th>Ideal</th><th>Máximo</th><th>Observação</th></tr></thead>
+      <tbody id="regrasTabela"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const VOL_REF = 1.0;
+
+const BASE = [
+  { nome:'Leite integral', qtd:350, un:'ml', funcao:'Base líquida' },
+  { nome:'Creme de leite UHT 17%', qtd:200, un:'ml', funcao:'Cremosidade' },
+  { nome:'Leite em pó integral', qtd:50, un:'g', funcao:'Estabilizante natural' },
+  { nome:'Sal marinho', qtd:2, un:'g', funcao:'Realça sabor' },
+];
+
+const SABORES_DB = {
+  'Chocolate 70%': { ings:[{n:'Chocolate 70-85%',q:150,u:'g',p:'Derreter'},{n:'Cacau em pó',q:20,u:'g',p:'Dissolver'}], obs:'Derreter chocolate em banho-maria' },
+  'Chocolate Meio Amargo': { ings:[{n:'Chocolate 50-55%',q:180,u:'g',p:'Derreter'}], obs:'Derreter' },
+  'Cacau Intenso': { ings:[{n:'Cacau pó 100%',q:80,u:'g',p:'Dissolver em leite quente'},{n:'Chocolate 70%',q:60,u:'g',p:'Derreter'}], obs:'Dissolver cacau em leite quente' },
+  'Doce de Leite': { ings:[{n:'Doce de leite lata',q:400,u:'g',p:'Direto'}], obs:'Adicionar direto da lata' },
+  'Flor de Leite': { ings:[{n:'Creme de leite extra',q:150,u:'ml',p:'Ferver com baunilha'},{n:'Leite condensado',q:80,u:'g',p:'Misturar'}], obs:'Ferver baunilha no creme' },
+  'Abóbora com Coco': { ings:[{n:'Abóbora cozida',q:200,u:'g',p:'Cozinhar e processar'},{n:'Coco ralado',q:80,u:'g',p:'Tostar'},{n:'Canela em pó',q:3,u:'g',p:'Misturar'}], obs:'Cozinhar abóbora até amaciar' },
+  'Coco': { ings:[{n:'Coco ralado',q:120,u:'g',p:'Tostar'},{n:'Leite de coco',q:80,u:'ml',p:'Reduzir'}], obs:'Tostar coco antes' },
+  'Pistache': { ings:[{n:'Pistache torrado',q:150,u:'g',p:'Moer fino'},{n:'Óleo de pistache',q:30,u:'ml',p:'Misturar'}], obs:'Moer pistache até pasta' },
+  'Morango': { ings:[{n:'Morango fresco',q:300,u:'g',p:'Cozinhar e processar'},{n:'Suco de limão',q:10,u:'ml',p:'Adicionar'}], obs:'Cozinhar morango até reduzir' },
+  'Frutas Vermelhas': { ings:[{n:'Morango',q:120,u:'g',p:'Cozinhar'},{n:'Framboesa',q:80,u:'g',p:'Cozinhar'},{n:'Amora',q:60,u:'g',p:'Cozinhar'},{n:'Mirtilo',q:40,u:'g',p:'Cozinhar'}], obs:'Cozinhar tudo junto até reduzir' },
+  'Limão Siciliano': { ings:[{n:'Raspas de limão',q:8,u:'g',p:'Curtir no creme'},{n:'Suco de limão',q:70,u:'ml',p:'Adicionar no final'},{n:'Açúcar de coco',q:60,u:'g',p:'Misturar'}], obs:'Curtir raspas no creme quente' },
+  'Capim Cidreira': { ings:[{n:'Capim cidreira',q:40,u:'g',p:'Infusão 20min'},{n:'Raspas de limão',q:5,u:'g',p:'Adicionar'},{n:'Açúcar de coco',q:40,u:'g',p:'Misturar'}], obs:'Infusão em leite quente' },
+  'Leitinho': { ings:[{n:'Leite condensado',q:200,u:'g',p:'Dourar na panela'},{n:'Baunilha',q:5,u:'ml',p:'Misturar'}], obs:'Dourar levemente o leite condensado' },
+  'Abacate': { ings:[{n:'Abacate maduro',q:280,u:'g',p:'Processar fresco'}], obs:'Usar abacate bem maduro, processar na hora' },
+};
+
+const ADOCANTES = {
+  tamara: { n:'Tâmara descaroçada', q:80, u:'g', p:'Hidratar 1h + escorrer + processar' },
+  banana: { n:'Banana madura assada', q:80, u:'g', p:'Assar 180°C 40min + amassar' },
+};
+
+const RECHEIOS = {
+  choc_picado: { n:'Chocolate picado', q:80, u:'g', p:'Adicionar semi-congelado' },
+  brownie: { n:'Brownie em cubos', q:100, u:'g', p:'Congelar antes + adicionar no final' },
+  doce_leite: { n:'Doce de leite', q:80, u:'g', p:'Marmorizar no pote' },
+  pasta_amend: { n:'Pasta de amendoim', q:80, u:'g', p:'Marmorizar no pote' },
+  nozes: { n:'Nozes / Castanhas', q:70, u:'g', p:'Tostar + picar + adicionar no final' },
+  frutas_crist: { n:'Frutas cristalizadas', q:80, u:'g', p:'Picar pequeno + adicionar no final' },
+  coco_queimado: { n:'Coco queimado', q:60, u:'g', p:'Tostar bem + adicionar no final' },
+  cookies: { n:'Cookies em pedaços', q:100, u:'g', p:'Congelar antes + adicionar no final' },
+};
+
+function fmt(val, un) {
+  const v = Math.round(val * 10) / 10;
+  return v % 1 === 0 ? v + un : v.toFixed(1) + un;
+}
+
+function calcular() {
+  const vol = parseFloat(document.getElementById('volume').value) || 1;
+  const saborKey = document.getElementById('saborSel').value;
+  const adoc = document.getElementById('adocante').value;
+  const recheioKey = document.getElementById('recheio').value;
+
+  if (!saborKey) { document.getElementById('resultado').style.display = 'none'; return; }
+
+  const sabor = SABORES_DB[saborKey];
+  let html = '';
+
+  html += '<div class="secao-title">🥛 Base Líquida</div>';
+  BASE.forEach(i => {
+    html += `<div class="ingrediente-row"><span class="nome">${i.nome}</span><span style="flex:1"></span><span class="funcao">${i.funcao}</span>&nbsp;&nbsp;<span class="qtd">${fmt(i.qtd * vol, i.un)}</span></div>`;
+  });
+
+  if (adoc !== 'nenhum') {
+    html += '<div class="secao-title">🍯 Adoçante Natural</div>';
+    if (adoc === 'tamara' || adoc === 'ambos') {
+      const a = ADOCANTES.tamara;
+      html += `<div class="ingrediente-row"><span class="nome">${a.n}</span><span style="flex:1"></span><span class="funcao">${a.p}</span>&nbsp;&nbsp;<span class="qtd">${fmt(a.q * vol, a.u)}</span></div>`;
+    }
+    if (adoc === 'banana' || adoc === 'ambos') {
+      const a = ADOCANTES.banana;
+      html += `<div class="ingrediente-row"><span class="nome">${a.n}</span><span style="flex:1"></span><span class="funcao">${a.p}</span>&nbsp;&nbsp;<span class="qtd">${fmt(a.q * vol, a.u)}</span></div>`;
+    }
+  }
+
+  html += `<div class="secao-title">🎨 Sabor: ${saborKey}</div>`;
+  sabor.ings.forEach(i => {
+    html += `<div class="ingrediente-row"><span class="nome">${i.n}</span><span style="flex:1"></span><span class="funcao">${i.p}</span>&nbsp;&nbsp;<span class="qtd">${fmt(i.q * vol, i.u)}</span></div>`;
+  });
+
+  if (recheioKey !== 'nenhum') {
+    const r = RECHEIOS[recheioKey];
+    html += '<div class="secao-title">✨ Recheio / Inclusão</div>';
+    html += `<div class="ingrediente-row"><span class="nome">${r.n}</span><span style="flex:1"></span><span class="funcao">${r.p}</span>&nbsp;&nbsp;<span class="qtd">${fmt(r.q * vol, r.u)}</span></div>`;
+  }
+
+  if (sabor.obs) {
+    html += `<div class="alert">💡 <strong>Dica:</strong> ${sabor.obs}</div>`;
+  }
+
+  document.getElementById('resultado-content').innerHTML = html;
+  document.getElementById('resultado').style.display = 'block';
+
+  const totalIngSabor = sabor.ings.reduce((s, i) => i.u === 'g' ? s + i.q * vol : s, 0);
+  document.getElementById('totais').innerHTML = `
+    <div class="total-card"><div class="valor">${vol.toFixed(1)}L</div><div class="desc">Volume total</div></div>
+    <div class="total-card"><div class="valor">${Math.round((350 + 200) * vol)}ml</div><div class="desc">Base líquida</div></div>
+    <div class="total-card"><div class="valor">${Math.round(totalIngSabor)}g</div><div class="desc">Ingredientes sabor</div></div>
+  `;
+}
+
+// SABORES GRID
+function buildSaboresGrid() {
+  const grid = document.getElementById('saboresGrid');
+  Object.keys(SABORES_DB).forEach(nome => {
+    const s = SABORES_DB[nome];
+    const div = document.createElement('div');
+    div.className = 'sabor-card';
+    const ings = s.ings.map(i => i.n).join(', ');
+    div.innerHTML = `<h3>${nome}</h3><p>${ings}</p><p style="margin-top:6px;color:var(--teal);font-size:0.75rem">${s.obs}</p>`;
+    div.onclick = () => {
+      document.getElementById('saborSel').value = nome;
+      showTab('receita');
+      calcular();
+    };
+    grid.appendChild(div);
+  });
+}
+
+// PREPARO
+function buildPreparo() {
+  const steps = [
+    { etapa:'Etapa 1 — Adoçante (1-2h antes)', steps:[
+      'Coloque as tâmaras em bowl e cubra com água fervente.',
+      'Deixe hidratar por 1 hora.',
+      'ESCORRA MUITO BEM — use peneira e esprema. A água deve sair toda! Pasta fica seca, não molhada.',
+      'Processe no liquidificador até virar pasta completamente lisa.',
+    ], alert:'⚠️ Se a pasta de tâmara ficar líquida, vai cristalizar o gelato!' },
+    { etapa:'Etapa 2 — Base do Gelato', steps:[
+      'Separe 100ml do leite numa caneca.',
+      'Aqueça até ~70°C (quente mas não fervendo).',
+      'Despeje o leite em pó no leite quente e mexa vigorosamente com fouet até dissolver 100%.',
+      'No liquidificador: adicione o leite com leite em pó + restante do leite frio + creme de leite + sal.',
+      'Bata por 3 minutos em velocidade alta. Base deve ficar completamente lisa e homogênea.',
+    ], alert:'⚠️ Não pule a dissolução do leite em pó! Senão fica com grumos.' },
+    { etapa:'Etapa 3 — Sabor', steps:[
+      'Para chocolates: derreta em banho-maria e misture à base morna.',
+      'Para frutas: cozinhe e processe separadamente, depois incorpore.',
+      'Para infusões (capim cidreira, baunilha): faça infusão no leite quente por 20min antes.',
+      'Misture o sabor à base e homogeneíze bem no liquidificador.',
+    ]},
+    { etapa:'Etapa 4 — Resfriamento', steps:[
+      'Deixe esfriar à temperatura ambiente por 30 min.',
+      'Cubra e leve à geladeira por no mínimo 2 horas (ideal: overnight).',
+      'A base deve estar bem fria antes de congelar.',
+    ]},
+    { etapa:'Etapa 5 — Congelamento', steps:[
+      'Coloque em recipiente raso e leve ao freezer.',
+      'A cada 30-40 minutos, retire e bata vigorosamente com garfo ou mixer.',
+      'Repita o processo por 3-4 horas.',
+      'Quanto mais bater, menos cristais de gelo e mais cremoso o resultado.',
+    ], alert:'💡 Dica do Mestre: bata a mistura semi-congelada no liquidificador uma vez na metade do processo — esse é o segredo da cremosidade italiana!'},
+  ];
+
+  let html = '';
+  steps.forEach(et => {
+    html += `<div class="secao-title">${et.etapa}</div>`;
+    et.steps.forEach((s, i) => {
+      html += `<div class="step"><div class="step-num">${i+1}</div><p>${s}</p></div>`;
+    });
+    if (et.alert) html += `<div class="alert">${et.alert}</div>`;
+  });
+  document.getElementById('preparo-content').innerHTML = html;
+}
+
+// BANCO TABELA
+function buildBanco() {
+  let rows = '';
+  Object.keys(SABORES_DB).forEach(nome => {
+    const s = SABORES_DB[nome];
+    const ings = s.ings.map(i => `${i.n}: <strong>${i.q}${i.u}/L</strong>`).join('<br>');
+    rows += `<tr><td><strong>${nome}</strong></td><td>${ings}</td><td style="font-size:0.8rem;color:var(--muted)">${s.obs}</td></tr>`;
+  });
+  document.getElementById('bancoTabela').innerHTML = rows;
+
+  const regras = [
+    ['Doce de leite','Principal Concentrado',350,400,450,'Rico, concentrado, baixa água'],
+    ['Chocolate 70%+','Principal Intenso',120,150,180,'Amargo, manteiga de cacau'],
+    ['Chocolate 50%','Principal Suave',150,180,220,'Mais doce que 70%'],
+    ['Leite condensado','Principal Doce',180,220,280,'Muito doce + proteínas'],
+    ['Frutas frescas','Principal Aquoso',250,300,350,'Alto teor de água, cozinhar'],
+    ['Frutas cozidas','Principal Concentrado',200,250,300,'Água reduzida, mais sabor'],
+    ['Pasta oleosa','Principal Gorduroso',120,150,180,'Denso, gordo, proteína'],
+    ['Coco ralado','Secundário Textura',60,80,120,'Tostar antes, dá crocância'],
+    ['Cacau em pó','Secundário Intenso',50,70,90,'Muito forte, usar com chocolate'],
+    ['Café expresso','Secundário Líquido',80,100,120,'Bem forte e concentrado'],
+    ['Creme de leite extra','Secundário Gordura',100,150,200,'Aumenta cremosidade'],
+    ['Baunilha essência','Aromático',3,5,8,'ml — essência concentrada'],
+    ['Canela em pó','Especiaria',2,3,5,'Combina com abóbora e banana'],
+    ['Raspas de limão','Aromático Cítrico',5,8,12,'Curtir no creme quente'],
+    ['Suco de limão','Ácido',8,10,15,'ml — realça sabor de frutas'],
+    ['Açúcar de coco','Açúcar Natural',40,60,80,'Quando precisa mais doçura'],
+    ['Chocolate picado','Adjunto Crocante',60,80,100,'Adicionar no final'],
+    ['Nozes/castanhas','Adjunto Crocante',50,70,90,'Tostar + picar'],
+    ['Brownie/cookies','Adjunto Massa',80,100,120,'Congelar antes'],
+  ];
+  let rRows = '';
+  regras.forEach(r => {
+    rRows += `<tr><td><strong>${r[0]}</strong></td><td><span class="badge badge-teal">${r[1]}</span></td><td>${r[2]}g</td><td style="color:var(--teal);font-weight:500">${r[3]}g</td><td>${r[4]}g</td><td style="font-size:0.8rem;color:var(--muted)">${r[5]}</td></tr>`;
+  });
+  document.getElementById('regrasTabela').innerHTML = rRows;
+}
+
+// AGENTE IA — TAGS
+const tagsBase = ['Leite integral','Creme de leite UHT','Leite em pó integral','Creme de leite fresco','Leite de coco'];
+const tagsAdoc = ['Tâmaras','Banana madura','Açúcar de coco','Mel','Açúcar mascavo'];
+const tagsSabor = ['Chocolate amargo 70%','Chocolate 50%','Cacau em pó','Morango','Manga','Maracujá','Limão siciliano','Abacate','Coco ralado','Pistache','Amendoim','Doce de leite','Leite condensado','Café espresso','Framboesa','Amora','Abóbora','Baunilha natural'];
+const tagsExtra = ['Canela em pó','Raspas de limão','Raspas de laranja','Gengibre','Sal marinho','Brownie','Nozes','Castanhas','Cookies','Frutas cristalizadas'];
+
+const selectedIa = new Set();
+
+function buildTagGroup(ids, arr) {
+  const el = document.getElementById(ids);
+  arr.forEach(nome => {
+    const t = document.createElement('span');
+    t.className = 'tag';
+    t.textContent = nome;
+    t.onclick = () => toggleIaTag(t, nome);
+    el.appendChild(t);
+  });
+}
+
+function toggleIaTag(el, nome) {
+  if (el.classList.contains('sel')) { el.classList.remove('sel'); selectedIa.delete(nome); }
+  else { el.classList.add('sel'); selectedIa.add(nome); }
+}
+
+function addCustomIng() {
+  const input = document.getElementById('customIng');
+  const v = input.value.trim();
+  if (!v) return;
+  const t = document.createElement('span');
+  t.className = 'tag sel';
+  t.textContent = v;
+  t.onclick = () => toggleIaTag(t, v);
+  document.getElementById('tags-custom').appendChild(t);
+  selectedIa.add(v);
+  input.value = '';
+}
+
+function limparTags() {
+  selectedIa.clear();
+  document.querySelectorAll('.tag.sel').forEach(t => t.classList.remove('sel'));
+  document.getElementById('tags-custom').innerHTML = '';
+  document.getElementById('boxIa').style.display = 'none';
+}
+
+function gerarIa() {
+  if (selectedIa.size === 0) { alert('Selecione pelo menos um ingrediente!'); return; }
+  const lista = Array.from(selectedIa).join(', ');
+
+  const prompt = `Tenho esses ingredientes disponíveis: ${lista}.
+
+Sou especialista em gelato artesanal italiano 100% natural (sem gomas, espessantes, corantes ou aditivos industriais). Crie a melhor receita possível com o que tenho.
+
+Responda neste formato:
+
+🍨 NOME DO GELATO
+[nome criativo em italiano/português]
+
+📝 PROPORÇÕES (para 500ml)
+[cada ingrediente com quantidade exata]
+
+👨‍🍳 PREPARO
+[máximo 6 passos numerados]
+
+💡 DICA DO MESTRE
+[uma técnica especial italiana]
+
+⚠️ ATENÇÃO
+[se faltar ingrediente essencial]`;
+
+  document.getElementById('boxIa').style.display = 'block';
+  document.getElementById('iaTitle').textContent = 'Gerando sua receita...';
+  document.getElementById('iaResposta').innerHTML = '<div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+
+  // Envia via sendPrompt para o chat
+  if (typeof sendPrompt === 'function') {
+    sendPrompt(prompt);
+    document.getElementById('iaResposta').textContent = '✅ Ingredientes enviados! Veja a resposta no chat acima.';
+    document.getElementById('iaTitle').textContent = 'Receita em andamento';
+  } else {
+    document.getElementById('iaResposta').textContent = 'Abra este app dentro do Claude.ai para usar o Agente IA.';
+  }
+}
+
+// TABS
+function showTab(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t => {
+    if (t.getAttribute('onclick').includes(id)) t.classList.add('active');
+  });
+}
+
+// INIT
+buildSaboresGrid();
+buildPreparo();
+buildBanco();
+buildTagGroup('tags-base', tagsBase);
+buildTagGroup('tags-adoc', tagsAdoc);
+buildTagGroup('tags-sabor', tagsSabor);
+buildTagGroup('tags-extra', tagsExtra);
+</script>
+</body>
+</html>
