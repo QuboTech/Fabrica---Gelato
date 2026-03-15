@@ -686,42 +686,30 @@ function limparTags() {
   document.getElementById('boxIa').style.display = 'none';
 }
 
-function gerarIa() {
+async function gerarIa() {
   if (selectedIa.size === 0) { alert('Selecione pelo menos um ingrediente!'); return; }
   const lista = Array.from(selectedIa).join(', ');
-
-  const prompt = `Tenho esses ingredientes disponíveis: ${lista}.
-
-Sou especialista em gelato artesanal italiano 100% natural (sem gomas, espessantes, corantes ou aditivos industriais). Crie a melhor receita possível com o que tenho.
-
-Responda neste formato:
-
-🍨 NOME DO GELATO
-[nome criativo em italiano/português]
-
-📝 PROPORÇÕES (para 500ml)
-[cada ingrediente com quantidade exata]
-
-👨‍🍳 PREPARO
-[máximo 6 passos numerados]
-
-💡 DICA DO MESTRE
-[uma técnica especial italiana]
-
-⚠️ ATENÇÃO
-[se faltar ingrediente essencial]`;
 
   document.getElementById('boxIa').style.display = 'block';
   document.getElementById('iaTitle').textContent = 'Gerando sua receita...';
   document.getElementById('iaResposta').innerHTML = '<div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
 
-  // Envia via sendPrompt para o chat
-  if (typeof sendPrompt === 'function') {
-    sendPrompt(prompt);
-    document.getElementById('iaResposta').textContent = '✅ Ingredientes enviados! Veja a resposta no chat acima.';
-    document.getElementById('iaTitle').textContent = 'Receita em andamento';
-  } else {
-    document.getElementById('iaResposta').textContent = 'Abra este app dentro do Claude.ai para usar o Agente IA.';
+  try {
+    const response = await fetch('https://gelato-agente.onrender.com/webhook/gelato', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ingredientes: lista })
+    });
+
+    if (!response.ok) throw new Error('Erro na resposta do servidor');
+
+    const text = await response.text();
+    document.getElementById('iaTitle').textContent = '🍨 Receita gerada pelo Agente!';
+    document.getElementById('iaResposta').textContent = text;
+
+  } catch (err) {
+    document.getElementById('iaTitle').textContent = 'Erro';
+    document.getElementById('iaResposta').textContent = '⚠️ O agente está acordando (pode levar 30s no primeiro uso). Tente novamente em instantes!';
   }
 }
 
